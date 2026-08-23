@@ -15,6 +15,15 @@ export default function Dashboard({ projects }) {
     (project) => project.status === 'Tamamlandı'
   ).length
 
+  const statusStyles = {
+    Başlanmadı:
+      'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
+    'Devam Ediyor':
+      'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+    Tamamlandı:
+      'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
+  }
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-10">
       <div className="mb-10">
@@ -78,7 +87,11 @@ export default function Dashboard({ projects }) {
                 </p>
               </div>
 
-              <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700 dark:bg-violet-500/10 dark:text-violet-400">
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                  statusStyles[project.status]
+                }`}
+              >
                 {project.status}
               </span>
             </div>
