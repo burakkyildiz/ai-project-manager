@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Navbar from './components/Navbar/Navbar.jsx'
-import Dashboard from './pages/Dashboard/Dashboard.jsx'
 import Projects from './pages/Projects/Projects.jsx'
 import {
   getProjects,
@@ -11,20 +10,6 @@ import {
 
 function App() {
   const [projects, setProjects] = useState(() => getProjects())
-  const [currentPage, setCurrentPage] = useState('dashboard')
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem('ai-project-manager-theme') === 'dark'
-  })
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode)
-
-    localStorage.setItem(
-      'ai-project-manager-theme',
-      darkMode ? 'dark' : 'light'
-    )
-  }, [darkMode])
-
   const handleAddProject = (projectData) => {
     const newProject = addProject(projectData)
 
@@ -58,26 +43,15 @@ function App() {
 
   return (
     <>
-      <Navbar
-        currentPage={currentPage}
-        onNavigate={setCurrentPage}
-        darkMode={darkMode}
-        onToggleTheme={() => setDarkMode((current) => !current)}
-      />
+      <Navbar />
 
       <main>
-        {currentPage === 'dashboard' && (
-          <Dashboard projects={projects} />
-        )}
-
-        {currentPage === 'projects' && (
-          <Projects
-            projects={projects}
-            onAddProject={handleAddProject}
-            onUpdateProject={handleUpdateProject}
-            onDeleteProject={handleDeleteProject}
-          />
-        )}
+        <Projects
+          projects={projects}
+          onAddProject={handleAddProject}
+          onUpdateProject={handleUpdateProject}
+          onDeleteProject={handleDeleteProject}
+        />
       </main>
     </>
   )
