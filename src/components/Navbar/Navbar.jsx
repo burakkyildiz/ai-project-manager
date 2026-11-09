@@ -3,7 +3,8 @@ export default function Navbar() {
     <header className="site-header">
       <div className="navigation">
         <div className="brand">
-          <span className="brand-mark" aria-hidden="true">a.</span><span>AI Manager</span>
+          <span className="brand-mark" aria-hidden="true">&gt;_</span>
+          <span>AI Manager</span>
         </div>
       </div>
     </header>

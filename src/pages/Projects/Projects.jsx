@@ -39,11 +39,18 @@ export default function Projects({ projects, onAddProject, onUpdateProject, onDe
   return (
     <section className="page-shell">
       <div className="page-heading">
-        <div><p className="eyebrow">ÇALIŞMA ALANI</p><h1>Projeler</h1>
-          <p className="page-description">Fikirlerini bir sonraki adıma taşı.</p></div>
+        <div>
+          <p className="eyebrow"><span aria-hidden="true">~ /</span> çalışma alanı</p>
+          <h1>Projeler<span className="heading-cursor" aria-hidden="true" /></h1>
+          <p className="page-description">Projelerini takip et ve yönet.</p>
+        </div>
         <button className="button button-primary" onClick={() => setShowForm(true)}><span aria-hidden="true">＋</span> Yeni proje</button>
       </div>
       <div className="project-panel">
+        <div className="terminal-titlebar" aria-hidden="true">
+          <span className="terminal-lights"><i /><i /><i /></span>
+          <span>~/projects</span>
+        </div>
         <div className="status-tabs" role="group" aria-label="Proje durumuna göre filtrele">
           {['', ...PROJECT_STATUSES].map((status) => (
             <button key={status} className={`status-tab ${filters.status === status ? 'is-active' : ''}`}
@@ -79,7 +86,6 @@ export default function Projects({ projects, onAddProject, onUpdateProject, onDe
           }}>{projects.length ? 'Filtreleri temizle' : 'Yeni proje ekle'}</button>
         </div>}
       </div>
-      <p className="workspace-note">Her büyük proje, küçük bir adımla başlar.</p>
       {showForm && <Modal labelledBy="project-form-title" onCancel={closeForm}>
         <ProjectForm key={editingProject?.id ?? 'new'} project={editingProject} onSubmit={handleSubmit} onCancel={closeForm} />
       </Modal>}
