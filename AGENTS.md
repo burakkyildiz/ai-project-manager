@@ -9,7 +9,6 @@ Bu dosya, projeye yeni bir oturumda devam etmek için güncel yapıyı, kabul ed
 - Kartlar proje adını, kategoriyi, durumu ve önceliği gösterir. **Show details** düğmesi açıklamayı ve kullanılan teknolojileri kartın içinde açar. Proje ekleme ve düzenleme formu ayrı bir pencerede açılır. Silme işlemi onay ister.
 - Veriler tarayıcıdaki `ai-project-manager-projects` LocalStorage anahtarında saklanır. İlk açılışta örnek kayıtlar yüklenir. Yerel önizleme ve Netlify farklı adreslerden çalıştığı için tarayıcı kayıtları ayrı tutulur.
 - Proje alanları `id`, `title`, `description`, `category`, `technologies`, `status`, `priority` ve `createdAt`. Durumlar **Başlanmadı**, **Devam Ediyor**, **Tamamlandı**. Öncelikler **Düşük**, **Orta**, **Yüksek**. Bu değerler eski kayıtlarla uyum için Türkçe saklanır; arayüzde `PROJECT_STATUS_LABELS` ve `PROJECT_PRIORITY_LABELS` ile İngilizce gösterilir.
-- README’de geçen Dashboard ve Dark / Light Mode, eski sürüme ait açıklamalardır. Güncel arayüz tek ekranlı ve koyu temalıdır.
 
 ## Dosya haritası
 
