@@ -5,7 +5,7 @@ import ProjectCard from '../../components/ProjectCard/ProjectCard.jsx'
 import ProjectForm from '../../components/ProjectForm/ProjectForm.jsx'
 import SearchBar from '../../components/SearchBar/SearchBar.jsx'
 import Modal from '../../components/Modal/Modal.jsx'
-import { PROJECT_STATUSES } from '../../interfaces/project.js'
+import { PROJECT_STATUSES, PROJECT_STATUS_LABELS } from '../../interfaces/project.js'
 
 const emptyFilters = { category: '', status: '', priority: '' }
 
@@ -40,37 +40,32 @@ export default function Projects({ projects, onAddProject, onUpdateProject, onDe
     <section className="page-shell">
       <div className="page-heading">
         <div>
-          <p className="eyebrow"><span aria-hidden="true">~ /</span> çalışma alanı</p>
-          <h1>Projeler<span className="heading-cursor" aria-hidden="true" /></h1>
-          <p className="page-description">Projelerini takip et ve yönet.</p>
+          <h1>Projects</h1>
+          <p className="page-description">Track and manage your projects.</p>
         </div>
-        <button className="button button-primary" onClick={() => setShowForm(true)}><span aria-hidden="true">＋</span> Yeni proje</button>
+        <button className="button button-primary" type="button" onClick={() => setShowForm(true)}><span aria-hidden="true">＋</span> New project</button>
       </div>
       <div className="project-panel">
-        <div className="terminal-titlebar" aria-hidden="true">
-          <span className="terminal-lights"><i /><i /><i /></span>
-          <span>~/projects</span>
-        </div>
-        <div className="status-tabs" role="group" aria-label="Proje durumuna göre filtrele">
+        <div className="status-tabs" role="group" aria-label="Filter by project status">
           {['', ...PROJECT_STATUSES].map((status) => (
             <button key={status} className={`status-tab ${filters.status === status ? 'is-active' : ''}`}
-              aria-pressed={filters.status === status} onClick={() => setFilters({ ...filters, status })}>
-              {status || 'Tüm projeler'}<span>{status ? projects.filter((p) => p.status === status).length : projects.length}</span>
+              type="button" aria-pressed={filters.status === status} onClick={() => setFilters({ ...filters, status })}>
+              {status ? PROJECT_STATUS_LABELS[status] : 'All projects'}<span>{status ? projects.filter((p) => p.status === status).length : projects.length}</span>
             </button>
           ))}
         </div>
         <div className="list-toolbar">
           <SearchBar value={search} onChange={setSearch} />
           <button className={`button button-secondary ${extraFilterCount ? 'has-filters' : ''}`}
-            aria-expanded={showFilters} aria-controls="project-filters" onClick={() => setShowFilters(!showFilters)}>
+            type="button" aria-expanded={showFilters} aria-controls="project-filters" onClick={() => setShowFilters(!showFilters)}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
-            Filtreler{extraFilterCount > 0 ? ` (${extraFilterCount})` : ''}
+            Filters{extraFilterCount > 0 ? ` (${extraFilterCount})` : ''}
           </button>
         </div>
         {showFilters && <div id="project-filters" className="filter-panel"><FilterBar filters={filters} onChange={setFilters} /></div>}
         <div className="list-caption">
-          <span role="status">{filteredProjects.length} proje{hasFilters ? ' gösteriliyor' : ''}</span>
-          {hasFilters ? <button className="text-button" onClick={() => { setSearch(''); setFilters(emptyFilters) }}>Filtreleri temizle</button> : <span>En yeni önce</span>}
+          <span role="status">{filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}{hasFilters ? ' shown' : ''}</span>
+          {hasFilters ? <button className="text-button" type="button" onClick={() => { setSearch(''); setFilters(emptyFilters) }}>Clear filters</button> : <span>Newest first</span>}
         </div>
         <div className="project-list">
           {filteredProjects.map((project) => <ProjectCard key={project.id} project={project}
@@ -78,12 +73,12 @@ export default function Projects({ projects, onAddProject, onUpdateProject, onDe
         </div>
         {filteredProjects.length === 0 && <div className="empty-state">
           <span className="empty-symbol" aria-hidden="true">{projects.length ? '⌕' : '＋'}</span>
-          <h2>{projects.length ? 'Eşleşen proje yok' : 'İlk projenle başla'}</h2>
-          <p>{projects.length ? 'Başka bir kelime ara veya filtreleri temizle.' : 'Aklındaki fikri ekle, ilerlemesini buradan takip et.'}</p>
-          <button className="button button-secondary" onClick={() => {
+          <h2>{projects.length ? 'No matching projects' : 'Start with your first project'}</h2>
+          <p>{projects.length ? 'Try another search or clear your filters.' : 'Add an idea and track its progress here.'}</p>
+          <button className="button button-secondary" type="button" onClick={() => {
             if (projects.length) { setSearch(''); setFilters(emptyFilters) }
             else setShowForm(true)
-          }}>{projects.length ? 'Filtreleri temizle' : 'Yeni proje ekle'}</button>
+          }}>{projects.length ? 'Clear filters' : 'Add a project'}</button>
         </div>}
       </div>
       {showForm && <Modal labelledBy="project-form-title" onCancel={closeForm}>

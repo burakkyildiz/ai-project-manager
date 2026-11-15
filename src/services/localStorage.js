@@ -12,7 +12,7 @@ function getSeedProjects() {
       id: 'seed-guitar-brand-detection',
       title: 'Guitar Brand Detection',
       description:
-        'Guitar görsellerinden marka sınıflandırması yapan bir computer vision projesi.',
+        'A computer vision project that classifies guitar brands from images.',
       category: 'Computer Vision',
       technologies: ['Python', 'TensorFlow', 'OpenCV'],
       status: 'Devam Ediyor',
@@ -21,9 +21,9 @@ function getSeedProjects() {
     }),
     createProject({
       id: 'seed-ai-workplace-safety',
-      title: 'AI İş Güvenliği Sistemi',
+      title: 'AI Workplace Safety System',
       description:
-        'İş yerinde güvenlik ihlallerini tespit eden yapay zeka tabanlı izleme sistemi.',
+        'An AI-powered monitoring system that detects safety violations in the workplace.',
       category: 'Computer Vision',
       technologies: ['Python', 'YOLO', 'FastAPI'],
       status: 'Başlanmadı',
@@ -34,7 +34,7 @@ function getSeedProjects() {
       id: 'seed-email-classification',
       title: 'Email Classification',
       description:
-        'E-postaları kategori ve önceliğe göre sınıflandıran NLP modeli.',
+        'An NLP model that classifies emails by category and priority.',
       category: 'Natural Language Processing',
       technologies: ['Python', 'scikit-learn', 'Transformers'],
       status: 'Tamamlandı',

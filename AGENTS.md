@@ -1,14 +1,14 @@
 # AI Project Manager
 
-Bu dosya, projeye yeni bir oturumda devam etmek için güncel yapıyı, kabul edilen tasarım kararlarını ve bu sohbet boyunca yapılan çalışmaları kaydeder. Son güncelleme 11 Kasım 2026.
+Bu dosya, projeye yeni bir oturumda devam etmek için güncel yapıyı, kabul edilen tasarım kararlarını ve bu sohbet boyunca yapılan çalışmaları kaydeder. Son güncelleme 15 Kasım 2026.
 
 ## Güncel uygulama
 
 - AI ve yazılım projelerini ekleme, düzenleme, silme ve takip etme uygulaması. React 19, Vite 8, Tailwind CSS 4 ve JavaScript/JSX kullanır.
-- Tek ana ekran **Projeler**. Liste en yeni projeden başlayarak sıralanır. Arama proje adı ve açıklamayı kapsar. Durum sekmeleri ile kategori ve öncelik filtreleri birlikte kullanılabilir.
-- Kartlar proje adını, kategoriyi, durumu ve önceliği gösterir. **Açıklamayı göster** düğmesi açıklamayı ve kullanılan teknolojileri kartın içinde açar. Proje ekleme ve düzenleme formu ayrı bir pencerede açılır. Silme işlemi onay ister.
+- Arayüz dili İngilizce. Tek ana ekran **Projects**. Liste en yeni projeden başlayarak sıralanır. Arama proje adı ve açıklamayı kapsar. Durum sekmeleri ile kategori ve öncelik filtreleri birlikte kullanılabilir.
+- Kartlar proje adını, kategoriyi, durumu ve önceliği gösterir. **Show details** düğmesi açıklamayı ve kullanılan teknolojileri kartın içinde açar. Proje ekleme ve düzenleme formu ayrı bir pencerede açılır. Silme işlemi onay ister.
 - Veriler tarayıcıdaki `ai-project-manager-projects` LocalStorage anahtarında saklanır. İlk açılışta örnek kayıtlar yüklenir. Yerel önizleme ve Netlify farklı adreslerden çalıştığı için tarayıcı kayıtları ayrı tutulur.
-- Proje alanları `id`, `title`, `description`, `category`, `technologies`, `status`, `priority` ve `createdAt`. Durumlar **Başlanmadı**, **Devam Ediyor**, **Tamamlandı**. Öncelikler **Düşük**, **Orta**, **Yüksek**.
+- Proje alanları `id`, `title`, `description`, `category`, `technologies`, `status`, `priority` ve `createdAt`. Durumlar **Başlanmadı**, **Devam Ediyor**, **Tamamlandı**. Öncelikler **Düşük**, **Orta**, **Yüksek**. Bu değerler eski kayıtlarla uyum için Türkçe saklanır; arayüzde `PROJECT_STATUS_LABELS` ve `PROJECT_PRIORITY_LABELS` ile İngilizce gösterilir.
 - README’de geçen Dashboard ve Dark / Light Mode, eski sürüme ait açıklamalardır. Güncel arayüz tek ekranlı ve koyu temalıdır.
 
 ## Dosya haritası
@@ -23,15 +23,16 @@ Bu dosya, projeye yeni bir oturumda devam etmek için güncel yapıyı, kabul ed
 | [src/components/Modal/Modal.jsx](src/components/Modal/Modal.jsx) | Yerel `dialog` öğesi, Escape ile kapatma ve odağı açan öğeye geri verme |
 | [src/interfaces/project.js](src/interfaces/project.js) | Veri modeli, geçerli kategori, durum ve öncelik değerleri |
 | [src/services/localStorage.js](src/services/localStorage.js) | Okuma, doğrulama, örnek kayıtlar ve kaydetme işlemleri |
-| [src/index.css](src/index.css) | Renk değişkenleri, terminal görünümü ve mobil yerleşim |
-| [index.html](index.html), [public/favicon.svg](public/favicon.svg) | Türkçe sayfa dili, tarayıcı tema rengi ve klasör simgesi |
+| [src/tokens.css](src/tokens.css), [src/base.css](src/base.css) | Renk, yazı, boşluk ve süre değişkenleri; temel sıfırlama stilleri |
+| [src/index.css](src/index.css) | Bileşen stilleri ve mobil yerleşim |
+| [index.html](index.html), [public/favicon.svg](public/favicon.svg) | İngilizce sayfa dili, Google Fonts, tarayıcı tema rengi ve klasör simgesi |
 
 ## Kabul edilen tasarım
 
-- **Zemin `#03080C`**, **kartlar `#2A373F`**, **vurgu `#E1BB80`**. Arka plan düz renktir. Altın tonu yeni proje düğmesinde, aktif kontrollerde ve başlık imlecinde kullanılır.
-- Terminal hissini sabit genişlikli yazı, `>_` marka işareti, `~/projects` pencere başlığı ve köşeli paneller oluşturur.
-- Kartlar boşluk, kenarlık ve sol renk şeridiyle ayrılır. Proje adının yanında harf kutusu bulunmaz. Öncelik etiketi durumun yanında görünür. Uzun açıklamalar başlangıçta kapalıdır.
-- Renk ve yerleşim değişikliklerinde `src/index.css` içindeki mevcut değişkenleri ve bileşenleri kullan. Veri modeli değişirse mevcut tarayıcı kayıtlarıyla uyumluluğunu kontrol et.
+- **Console** teması: grafit zemin (`--color-paper`), amber vurgu (`--color-accent`). Yazılar Host Grotesk, sayılar Atkinson Hyperlegible Mono.
+- Projeler çizgilerle ayrılmış kompakt bir liste (register) halindedir. Durum, başlığın solunda renkli bir nokta; öncelik başlığın yanında etikettir. Kategori ve teknolojiler **Show details** alanında görünür.
+- Kontroller en az 44px dokunma alanına sahiptir. Durum sekmeleri dar ekranda yatay kaydırılır.
+- Renk ve yerleşim değişikliklerinde `src/tokens.css` içindeki değişkenleri ve `src/index.css` içindeki bileşenleri kullan. Veri modeli değişirse mevcut tarayıcı kayıtlarıyla uyumluluğunu kontrol et.
 
 ## Yapılan çalışmalar
 
@@ -40,6 +41,7 @@ Bu dosya, projeye yeni bir oturumda devam etmek için güncel yapıyı, kabul ed
 3. **Kartların ayrılması ve açıklamaların gizlenmesi.** Kartlar arasında boşluk ve belirgin kenarlık eklendi, başlıklar güçlendirildi. Açıklama ve teknoloji listesi açılır alana taşındı.
 4. **Palet ve terminal denemeleri.** Önce petrol, turkuaz ve mint paleti denendi. Terminal görünümüne geçildikten sonra bordo, çelik mavisi ve altın paleti uygulandı. Kullanıcı bordo zemini beğenmeyince düz siyah, füme ve altın paleti seçildi.
 5. **9 Kasım 2026 — Terminal sürümü canlıda.** Son tasarım `bea0970` commit’iyle `main` dalına gönderildi. Lint ve üretim derlemesi geçti. Netlify’ın canlı sayfada yeni JS ve CSS dosyalarını sunduğu doğrulandı. Yerel geliştirme sunucusu daha sonra kullanıcının isteğiyle kapatıldı.
+6. **15 Kasım 2026 — İngilizce arayüz ve Console tasarımı.** Terminal teması yerine grafit ve amber tonlu kompakt liste tasarımına geçildi. Tüm arayüz metinleri İngilizceye çevrildi; saklanan durum ve öncelik değerleri değişmedi.
 
 ## Çalıştırma ve yayın
 

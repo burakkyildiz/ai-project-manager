@@ -36,8 +36,20 @@ export const PROJECT_CATEGORIES = [
 /** @type {ProjectStatus[]} */
 export const PROJECT_STATUSES = ['Başlanmadı', 'Devam Ediyor', 'Tamamlandı']
 
+export const PROJECT_STATUS_LABELS = {
+  'Başlanmadı': 'Not started',
+  'Devam Ediyor': 'In progress',
+  'Tamamlandı': 'Completed',
+}
+
 /** @type {ProjectPriority[]} */
 export const PROJECT_PRIORITIES = ['Düşük', 'Orta', 'Yüksek']
+
+export const PROJECT_PRIORITY_LABELS = {
+  'Düşük': 'Low',
+  'Orta': 'Medium',
+  'Yüksek': 'High',
+}
 
 /**
  * @param {unknown} value

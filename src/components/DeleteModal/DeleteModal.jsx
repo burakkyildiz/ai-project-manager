@@ -6,13 +6,13 @@ function DeleteConfirmation({ project, onConfirm, onCancel }) {
   return (
     <Modal labelledBy="delete-title" onCancel={onCancel}>
       <div className="delete-confirmation">
-        <h2 id="delete-title">Projeyi sil?</h2>
-        <p><strong>{project.title}</strong> projesi silinecek. Bu işlem geri alınamaz.</p>
+        <h2 id="delete-title">Delete project?</h2>
+        <p><strong>{project.title}</strong> will be deleted. This can’t be undone.</p>
         {error && <p className="form-error" role="alert">{error}</p>}
-        <div className="modal-footer"><button className="button button-secondary" onClick={onCancel}>Vazgeç</button>
-          <button className="button button-danger" onClick={() => {
-            try { onConfirm(project.id) } catch { setError('Proje silinemedi. Lütfen tekrar dene.') }
-          }}>Projeyi sil</button></div>
+        <div className="modal-footer"><button className="button button-secondary" type="button" onClick={onCancel}>Cancel</button>
+          <button className="button button-danger" type="button" onClick={() => {
+            try { onConfirm(project.id) } catch { setError('Could not delete the project. Please try again.') }
+          }}>Delete project</button></div>
       </div>
     </Modal>
   )
