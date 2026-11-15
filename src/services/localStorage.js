@@ -4,6 +4,25 @@ import {
 } from '../interfaces/project.js'
 
 const STORAGE_KEY = 'ai-project-manager-projects'
+const ORDER_KEY = 'ai-project-manager-order'
+
+/**
+ * Manual list order as project ids. Projects missing from it are shown first, newest first.
+ * @returns {string[]}
+ */
+export function getProjectOrder() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(ORDER_KEY) ?? '[]')
+    return Array.isArray(parsed) ? parsed.filter((id) => typeof id === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+/** @param {string[]} ids */
+export function saveProjectOrder(ids) {
+  localStorage.setItem(ORDER_KEY, JSON.stringify(ids))
+}
 
 /** @returns {import('../interfaces/project.js').Project[]} */
 function getSeedProjects() {

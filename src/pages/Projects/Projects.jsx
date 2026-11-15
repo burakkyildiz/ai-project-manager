@@ -1,15 +1,16 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import DeleteModal from '../../components/DeleteModal/DeleteModal.jsx'
 import FilterBar from '../../components/FilterBar/FilterBar.jsx'
 import ProjectCard from '../../components/ProjectCard/ProjectCard.jsx'
 import ProjectForm from '../../components/ProjectForm/ProjectForm.jsx'
 import SearchBar from '../../components/SearchBar/SearchBar.jsx'
 import Modal from '../../components/Modal/Modal.jsx'
+import useDragReorder from '../../hooks/useDragReorder.js'
 import { PROJECT_STATUSES, PROJECT_STATUS_LABELS } from '../../interfaces/project.js'
 
 const emptyFilters = { category: '', status: '', priority: '' }
 
-export default function Projects({ projects, onAddProject, onUpdateProject, onDeleteProject }) {
+export default function Projects({ projects, projectOrder, onReorderProjects, onAddProject, onUpdateProject, onDeleteProject }) {
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState(emptyFilters)
   const [showFilters, setShowFilters] = useState(false)
@@ -19,15 +20,58 @@ export default function Projects({ projects, onAddProject, onUpdateProject, onDe
   const extraFilterCount = Number(Boolean(filters.category)) + Number(Boolean(filters.priority))
   const hasFilters = Boolean(search || filters.status || extraFilterCount)
 
+  const [announcement, setAnnouncement] = useState('')
+  const listRef = useRef(null)
+  const focusHandleId = useRef(null)
+
+  const orderedProjects = useMemo(() => {
+    const rank = new Map(projectOrder.map((id, index) => [id, index]))
+    return [...projects].sort((a, b) => {
+      const rankA = rank.get(a.id)
+      const rankB = rank.get(b.id)
+      if (rankA === undefined && rankB === undefined) return new Date(b.createdAt) - new Date(a.createdAt)
+      if (rankA === undefined) return -1
+      if (rankB === undefined) return 1
+      return rankA - rankB
+    })
+  }, [projects, projectOrder])
+
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLocaleLowerCase('tr')
-    return projects.filter((project) => (
+    return orderedProjects.filter((project) => (
       `${project.title} ${project.description}`.toLocaleLowerCase('tr').includes(query) &&
       (!filters.category || project.category === filters.category) &&
       (!filters.status || project.status === filters.status) &&
       (!filters.priority || project.priority === filters.priority)
-    )).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-  }, [projects, search, filters])
+    ))
+  }, [orderedProjects, search, filters])
+
+  const moveProject = (from, to) => {
+    const moving = filteredProjects[from]
+    const target = filteredProjects[to]
+    if (!moving || !target || from === to) return
+    const ids = orderedProjects.map((project) => project.id).filter((id) => id !== moving.id)
+    const targetIndex = ids.indexOf(target.id)
+    ids.splice(to > from ? targetIndex + 1 : targetIndex, 0, moving.id)
+    onReorderProjects(ids)
+    setAnnouncement(`${moving.title} moved to position ${to + 1} of ${filteredProjects.length}.`)
+  }
+  const startDrag = useDragReorder(listRef, moveProject)
+  const handleReorderKey = (event, index) => {
+    const step = { ArrowUp: -1, ArrowDown: 1 }[event.key]
+    if (!step) return
+    event.preventDefault()
+    const to = index + step
+    if (to < 0 || to >= filteredProjects.length) return
+    focusHandleId.current = filteredProjects[index].id
+    moveProject(index, to)
+  }
+
+  useEffect(() => {
+    if (!focusHandleId.current) return
+    document.querySelector(`[data-drag-handle="${focusHandleId.current}"]`)?.focus()
+    focusHandleId.current = null
+  }, [filteredProjects])
 
   const closeForm = () => { setShowForm(false); setEditingProject(null) }
   const handleSubmit = (data) => {
@@ -62,13 +106,16 @@ export default function Projects({ projects, onAddProject, onUpdateProject, onDe
             Filters{extraFilterCount > 0 ? ` (${extraFilterCount})` : ''}
           </button>
         </div>
-        {showFilters && <div id="project-filters" className="filter-panel"><FilterBar filters={filters} onChange={setFilters} /></div>}
-        <div className="list-caption">
-          <span role="status">{filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}{hasFilters ? ' shown' : ''}</span>
-          {hasFilters ? <button className="text-button" type="button" onClick={() => { setSearch(''); setFilters(emptyFilters) }}>Clear filters</button> : <span>Newest first</span>}
-        </div>
-        <div className="project-list">
-          {filteredProjects.map((project) => <ProjectCard key={project.id} project={project}
+        {showFilters && <div id="project-filters" className="filter-panel">
+          <FilterBar filters={filters} onChange={setFilters} />
+          {extraFilterCount > 0 && <button className="text-button clear-filters" type="button" onClick={() => setFilters({ ...filters, category: '', priority: '' })}>Clear filters</button>}
+        </div>}
+        <p className="visually-hidden" role="status">{filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}{hasFilters ? ' shown' : ''}</p>
+        <p className="visually-hidden" aria-live="assertive">{announcement}</p>
+        <p id="reorder-help" className="visually-hidden">Drag to change the order, or use the up and down arrow keys.</p>
+        <div className="project-list" ref={listRef}>
+          {filteredProjects.map((project, index) => <ProjectCard key={project.id} project={project}
+            onDragStart={(event) => startDrag(event, index)} onReorderKey={(event) => handleReorderKey(event, index)}
             onEdit={(item) => { setEditingProject(item); setShowForm(true) }} onDelete={setDeletingProject} />)}
         </div>
         {filteredProjects.length === 0 && <div className="empty-state">

@@ -6,10 +6,18 @@ import {
   addProject,
   updateProject,
   deleteProject,
+  getProjectOrder,
+  saveProjectOrder,
 } from './services/localStorage.js'
 
 function App() {
   const [projects, setProjects] = useState(() => getProjects())
+  const [projectOrder, setProjectOrder] = useState(() => getProjectOrder())
+
+  const handleReorderProjects = (ids) => {
+    setProjectOrder(ids)
+    try { saveProjectOrder(ids) } catch { /* order still applies for this session */ }
+  }
   const handleAddProject = (projectData) => {
     const newProject = addProject(projectData)
 
@@ -48,6 +56,8 @@ function App() {
       <main>
         <Projects
           projects={projects}
+          projectOrder={projectOrder}
+          onReorderProjects={handleReorderProjects}
           onAddProject={handleAddProject}
           onUpdateProject={handleUpdateProject}
           onDeleteProject={handleDeleteProject}
