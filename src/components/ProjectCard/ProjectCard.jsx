@@ -1,9 +1,11 @@
 import StatusBadge from '../StatusBadge/StatusBadge.jsx'
-import { PROJECT_PRIORITY_LABELS } from '../../interfaces/project.js'
+import { getProjectTasks, PROJECT_PRIORITY_LABELS } from '../../interfaces/project.js'
 
 const priorityClass = { 'Düşük': 'low', 'Orta': 'medium', 'Yüksek': 'high' }
 
-export default function ProjectCard({ project, onEdit, onDelete, onDragStart, onReorderKey }) {
+export default function ProjectCard({ project, onEdit, onDelete, onToggleTask, onDragStart, onReorderKey }) {
+  const tasks = getProjectTasks(project)
+  const doneCount = tasks.filter((task) => task.done).length
   return (
     <article className="project-row">
       <div className="project-rail">
@@ -28,12 +30,24 @@ export default function ProjectCard({ project, onEdit, onDelete, onDragStart, on
           <summary>
             <span className="details-show">Show details</span>
             <span className="details-hide">Hide details</span>
+            {tasks.length > 0 && <span className="task-progress">{doneCount}/{tasks.length} done</span>}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
               <path d="m6 9 6 6 6-6" />
             </svg>
           </summary>
           <div className="project-details-body">
-            <p className="project-description">{project.description.trim() ? project.description : 'No description added.'}</p>
+            {tasks.length > 0 ? (
+              <ul className="task-list" aria-label="Tasks">
+                {tasks.map((task) => (
+                  <li key={task.id}>
+                    <label className={task.done ? 'is-done' : ''}>
+                      <input type="checkbox" checked={task.done} onChange={() => onToggleTask(project, task)} />
+                      <span>{task.text}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="project-description">No tasks added.</p>}
             <div className="project-meta">
               <p className="project-category">Category: {project.category}</p>
               <p className="project-technologies">Technologies: {project.technologies.join(', ') || 'Not specified'}</p>

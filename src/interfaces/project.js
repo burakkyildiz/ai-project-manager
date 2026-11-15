@@ -11,10 +11,18 @@
  */
 
 /**
+ * @typedef {Object} ProjectTask
+ * @property {string} id
+ * @property {string} text
+ * @property {boolean} done
+ */
+
+/**
  * @typedef {Object} Project
  * @property {string} id
  * @property {string} title
- * @property {string} description
+ * @property {string} description Legacy free text; new projects keep it empty and use `tasks`.
+ * @property {ProjectTask[]} [tasks]
  * @property {ProjectCategory} category
  * @property {string[]} technologies
  * @property {ProjectStatus} status
@@ -51,6 +59,27 @@ export const PROJECT_PRIORITY_LABELS = {
   'Yüksek': 'High',
 }
 
+/** @param {unknown} task */
+function isValidTask(task) {
+  return Boolean(task) && typeof task === 'object' &&
+    typeof task.id === 'string' && typeof task.text === 'string' && typeof task.done === 'boolean'
+}
+
+/**
+ * Tasks of a project. Older projects only have a free-text description, so each
+ * non-empty line of it is shown as a task until the project is edited.
+ * @param {Pick<Project, 'description' | 'tasks'>} project
+ * @returns {ProjectTask[]}
+ */
+export function getProjectTasks(project) {
+  if (project.tasks?.length) return project.tasks
+  return project.description
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, '').trim())
+    .filter(Boolean)
+    .map((text, index) => ({ id: `legacy-${index}`, text, done: false }))
+}
+
 /**
  * @param {unknown} value
  * @returns {value is Project}
@@ -66,6 +95,7 @@ export function isValidProject(value) {
     typeof project.id === 'string' &&
     typeof project.title === 'string' &&
     typeof project.description === 'string' &&
+    (project.tasks === undefined || (Array.isArray(project.tasks) && project.tasks.every(isValidTask))) &&
     typeof project.category === 'string' &&
     PROJECT_CATEGORIES.includes(/** @type {ProjectCategory} */ (project.category)) &&
     Array.isArray(project.technologies) &&
@@ -87,6 +117,7 @@ export function createProject(project) {
     id: project.id ?? crypto.randomUUID(),
     title: project.title,
     description: project.description,
+    tasks: (project.tasks ?? []).map(({ id, text, done }) => ({ id, text, done })),
     category: project.category,
     technologies: [...project.technologies],
     status: project.status,

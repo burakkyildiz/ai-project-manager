@@ -6,7 +6,7 @@ import ProjectForm from '../../components/ProjectForm/ProjectForm.jsx'
 import SearchBar from '../../components/SearchBar/SearchBar.jsx'
 import Modal from '../../components/Modal/Modal.jsx'
 import useDragReorder from '../../hooks/useDragReorder.js'
-import { PROJECT_STATUSES, PROJECT_STATUS_LABELS } from '../../interfaces/project.js'
+import { getProjectTasks, PROJECT_STATUSES, PROJECT_STATUS_LABELS } from '../../interfaces/project.js'
 
 const emptyFilters = { category: '', status: '', priority: '' }
 
@@ -39,7 +39,7 @@ export default function Projects({ projects, projectOrder, onReorderProjects, on
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLocaleLowerCase('tr')
     return orderedProjects.filter((project) => (
-      `${project.title} ${project.description}`.toLocaleLowerCase('tr').includes(query) &&
+      `${project.title} ${project.description} ${(project.tasks ?? []).map((task) => task.text).join(' ')}`.toLocaleLowerCase('tr').includes(query) &&
       (!filters.category || project.category === filters.category) &&
       (!filters.status || project.status === filters.status) &&
       (!filters.priority || project.priority === filters.priority)
@@ -73,6 +73,10 @@ export default function Projects({ projects, projectOrder, onReorderProjects, on
     focusHandleId.current = null
   }, [filteredProjects])
 
+  const toggleTask = (project, task) => {
+    const tasks = getProjectTasks(project).map((item) => item.id === task.id ? { ...item, done: !item.done } : item)
+    onUpdateProject(project.id, { tasks, description: '' })
+  }
   const closeForm = () => { setShowForm(false); setEditingProject(null) }
   const handleSubmit = (data) => {
     if (editingProject) onUpdateProject(editingProject.id, data)
@@ -116,6 +120,7 @@ export default function Projects({ projects, projectOrder, onReorderProjects, on
         <div className="project-list" ref={listRef}>
           {filteredProjects.map((project, index) => <ProjectCard key={project.id} project={project}
             onDragStart={(event) => startDrag(event, index)} onReorderKey={(event) => handleReorderKey(event, index)}
+            onToggleTask={toggleTask}
             onEdit={(item) => { setEditingProject(item); setShowForm(true) }} onDelete={setDeletingProject} />)}
         </div>
         {filteredProjects.length === 0 && <div className="empty-state">
