@@ -6,19 +6,23 @@ const priorityClass = { 'Düşük': 'low', 'Orta': 'medium', 'Yüksek': 'high' }
 export default function ProjectCard({ project, onEdit, onDelete, onDragStart, onReorderKey }) {
   return (
     <article className="project-row">
-      <button className="drag-handle" type="button" aria-label={`Reorder ${project.title}`} aria-describedby="reorder-help"
-        data-drag-handle={project.id} onPointerDown={onDragStart} onKeyDown={onReorderKey}>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-          <circle cx="5.5" cy="3.5" r="1.3" /><circle cx="10.5" cy="3.5" r="1.3" />
-          <circle cx="5.5" cy="8" r="1.3" /><circle cx="10.5" cy="8" r="1.3" />
-          <circle cx="5.5" cy="12.5" r="1.3" /><circle cx="10.5" cy="12.5" r="1.3" />
-        </svg>
-      </button>
+      <div className="project-rail">
+        <button className="drag-handle" type="button" aria-label={`Reorder ${project.title}`} aria-describedby="reorder-help"
+          data-drag-handle={project.id} onPointerDown={onDragStart} onKeyDown={onReorderKey}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <circle cx="5.5" cy="3.5" r="1.3" /><circle cx="10.5" cy="3.5" r="1.3" />
+            <circle cx="5.5" cy="8" r="1.3" /><circle cx="10.5" cy="8" r="1.3" />
+            <circle cx="5.5" cy="12.5" r="1.3" /><circle cx="10.5" cy="12.5" r="1.3" />
+          </svg>
+        </button>
+        <span className={`priority-badge ${priorityClass[project.priority] ?? ''}`}>
+          {PROJECT_PRIORITY_LABELS[project.priority] ?? project.priority}<span className="visually-hidden"> priority</span>
+        </span>
+      </div>
       <div className="project-content">
         <div className="project-title-line">
           <StatusBadge status={project.status} />
           <h2>{project.title}</h2>
-          <span className={`priority-badge ${priorityClass[project.priority] ?? ''}`}>{PROJECT_PRIORITY_LABELS[project.priority] ?? project.priority} priority</span>
         </div>
         <details className="project-details">
           <summary>
