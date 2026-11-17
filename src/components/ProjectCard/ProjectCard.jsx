@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import StatusBadge from '../StatusBadge/StatusBadge.jsx'
 import { getProjectTasks, PROJECT_PRIORITY_LABELS } from '../../interfaces/project.js'
 
@@ -6,8 +7,17 @@ const priorityClass = { 'Düşük': 'low', 'Orta': 'medium', 'Yüksek': 'high' }
 export default function ProjectCard({ project, onEdit, onDelete, onToggleTask, onDragStart, onReorderKey }) {
   const tasks = getProjectTasks(project)
   const doneCount = tasks.filter((task) => task.done).length
+  const [open, setOpen] = useState(false)
+  const detailsId = `details-${project.id}`
+  // Clicking empty space in the row toggles the details. Controls, task checkboxes and
+  // the detail text itself keep their own behaviour, and selecting text never toggles.
+  const handleRowClick = (event) => {
+    if (event.target.closest('button, input, label, a, .project-details-body p')) return
+    if (window.getSelection()?.toString()) return
+    setOpen((value) => !value)
+  }
   return (
-    <article className="project-row">
+    <article className={`project-row ${open ? 'is-open' : ''} ${project.status === 'Tamamlandı' ? 'is-complete' : ''}`} onClick={handleRowClick}>
       <div className="project-rail">
         <button className="drag-handle" type="button" aria-label={`Reorder ${project.title}`} aria-describedby="reorder-help"
           data-drag-handle={project.id} onPointerDown={onDragStart} onKeyDown={onReorderKey}>
@@ -24,17 +34,13 @@ export default function ProjectCard({ project, onEdit, onDelete, onToggleTask, o
       <div className="project-content">
         <div className="project-title-line">
           <StatusBadge status={project.status} />
-          <h2>{project.title}</h2>
+          <h2><button type="button" className="row-toggle" aria-expanded={open} aria-controls={detailsId} onClick={() => setOpen(!open)}>{project.title}</button></h2>
+          {tasks.length > 0 && <span className="task-progress">{doneCount}/{tasks.length} done</span>}
+          <svg className="row-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
         </div>
-        <details className="project-details">
-          <summary>
-            <span className="details-show">Show details</span>
-            <span className="details-hide">Hide details</span>
-            {tasks.length > 0 && <span className="task-progress">{doneCount}/{tasks.length} done</span>}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </summary>
+        {open && <div className="project-details" id={detailsId}>
           <div className="project-details-body">
             {tasks.length > 0 ? (
               <ul className="task-list" aria-label="Tasks">
@@ -53,7 +59,7 @@ export default function ProjectCard({ project, onEdit, onDelete, onToggleTask, o
               <p className="project-technologies">Technologies: {project.technologies.join(', ') || 'Not specified'}</p>
             </div>
           </div>
-        </details>
+        </div>}
       </div>
       <div className="project-actions">
         <div className="row-buttons">

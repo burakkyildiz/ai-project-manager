@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { getProjectTasks, PROJECT_CATEGORIES, PROJECT_STATUSES, PROJECT_PRIORITIES, PROJECT_STATUS_LABELS, PROJECT_PRIORITY_LABELS } from '../../interfaces/project.js'
+import { getProjectTasks, getStatusForTasks, PROJECT_CATEGORIES, PROJECT_STATUSES, PROJECT_PRIORITIES, PROJECT_STATUS_LABELS, PROJECT_PRIORITY_LABELS } from '../../interfaces/project.js'
 
 export default function ProjectForm({ project, onSubmit, onCancel }) {
   const [form, setForm] = useState(() => ({
@@ -38,9 +38,14 @@ export default function ProjectForm({ project, onSubmit, onCancel }) {
     if (!form.title.trim()) {
       setError('Add a project name.'); return
     }
+    const cleanTasks = tasks.map((task) => ({ ...task, text: task.text.trim() })).filter((task) => task.text)
+    if (form.status === 'Tamamlandı' && project?.status !== 'Tamamlandı' && cleanTasks.some((task) => !task.done)) {
+      setError('Finish all tasks before setting the status to Completed.'); return
+    }
     try {
       onSubmit({ ...form, title: form.title.trim(), description: '',
-        tasks: tasks.map((task) => ({ ...task, text: task.text.trim() })).filter((task) => task.text),
+        status: getStatusForTasks(form.status, cleanTasks),
+        tasks: cleanTasks,
         technologies: [...new Set(form.technologies.split(',').map((item) => item.trim()).filter(Boolean))] })
     } catch {
       setError('Could not save the project. Check your browser storage and try again.')

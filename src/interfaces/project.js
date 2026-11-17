@@ -81,6 +81,20 @@ export function getProjectTasks(project) {
 }
 
 /**
+ * A project with tasks is completed exactly when all of them are done: finishing the
+ * last task completes it, and an open task keeps it (or moves it back) in progress.
+ * Projects without tasks keep whatever status was chosen.
+ * @param {ProjectStatus} status
+ * @param {ProjectTask[]} tasks
+ * @returns {ProjectStatus}
+ */
+export function getStatusForTasks(status, tasks) {
+  if (tasks.length === 0) return status
+  if (tasks.every((task) => task.done)) return 'Tamamlandı'
+  return status === 'Tamamlandı' ? 'Devam Ediyor' : status
+}
+
+/**
  * @param {unknown} value
  * @returns {value is Project}
  */

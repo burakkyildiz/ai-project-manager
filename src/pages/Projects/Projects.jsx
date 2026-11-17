@@ -6,7 +6,7 @@ import ProjectForm from '../../components/ProjectForm/ProjectForm.jsx'
 import SearchBar from '../../components/SearchBar/SearchBar.jsx'
 import Modal from '../../components/Modal/Modal.jsx'
 import useDragReorder from '../../hooks/useDragReorder.js'
-import { getProjectTasks, PROJECT_STATUSES, PROJECT_STATUS_LABELS } from '../../interfaces/project.js'
+import { getProjectTasks, getStatusForTasks, PROJECT_STATUSES, PROJECT_STATUS_LABELS } from '../../interfaces/project.js'
 
 const emptyFilters = { category: '', status: '', priority: '' }
 
@@ -75,7 +75,7 @@ export default function Projects({ projects, projectOrder, onReorderProjects, on
 
   const toggleTask = (project, task) => {
     const tasks = getProjectTasks(project).map((item) => item.id === task.id ? { ...item, done: !item.done } : item)
-    onUpdateProject(project.id, { tasks, description: '' })
+    onUpdateProject(project.id, { tasks, description: '', status: getStatusForTasks(project.status, tasks) })
   }
   const closeForm = () => { setShowForm(false); setEditingProject(null) }
   const handleSubmit = (data) => {
